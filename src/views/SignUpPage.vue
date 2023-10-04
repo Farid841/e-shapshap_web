@@ -43,33 +43,35 @@
           </div>
 
           <!-- Email input -->
-          <div class="relative mb-6">
-              <input type="email" v-model="email" class="peer block w-full rounded border bg-gray-100 px-3 py-2 outline-none transition-all focus:placeholder-opacity-0" id="emailInput" placeholder="" required />
-              <label for="emailInput" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Email address</label>
-          </div>
+         <!-- Email input -->
+<div class="relative mb-6">
+    <input type="email" v-model="email" class="peer block w-full rounded border bg-gray-100 px-3 py-2 outline-none transition-all focus:placeholder-opacity-0" id="emailInput" placeholder="" required />
+    <label :class="{'has-value': emailHashValue}" for="emailInput" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Email address</label>
+</div>
+
 
           <!-- Nom -->
           <div class="relative mb-6">
               <input type="text" v-model="name" class="peer block w-full rounded border bg-gray-100 px-3 py-2 outline-none transition-all focus:placeholder-opacity-0" id="nameInput" placeholder="" required />
-              <label for="nameInput" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Nom</label>
+              <label for="nameInput" :class="{'has-value': nameHashValue}" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Nom</label>
           </div>
 
           <!-- Prénom -->
           <div class="relative mb-6">
               <input type="text" v-model="firstname" class="peer block w-full rounded border bg-gray-100 px-3 py-2 outline-none transition-all focus:placeholder-opacity-0" id="firstnameInput" placeholder="" required />
-              <label for="firstnameInput" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Prénom</label>
+              <label for="firstnameInput" :class="{'has-value': firstnameHashValue}" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Prénom</label>
           </div>
 
           <!-- Password input -->
           <div class="relative mb-6">
               <input type="password" v-model="password" class="peer block w-full rounded border bg-gray-100 px-3 py-2 outline-none transition-all focus:placeholder-opacity-0" id="passwordInput" placeholder="" required/>
-              <label for="passwordInput" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Mot de passe</label>
+              <label for="passwordInput" :class="{'has-value': passworHashValue}" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Mot de passe</label>
           </div>
 
           <!-- Password input -->
           <div class="relative mb-6">
               <input type="password" v-model="confirmPassword" class="peer block w-full rounded border bg-gray-100 px-3 py-2 outline-none transition-all focus:placeholder-opacity-0" id="confirmPassword" placeholder="" required/>
-              <label for="confirmPassword" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Confirmation de mot de passe</label>
+              <label for="confirmPassword" :class="{'has-value': confirmPasswordHashValue}" class="absolute left-3 top-2 text-gray-700 transition-all peer-focus:-top-6 peer-focus:text-primary">Confirmation de mot de passe</label>
           </div>
 
 
@@ -125,38 +127,70 @@
     export default {
         data() {
             return {
-                email: "",
-                name: "",
-                firstname: "",
-                password: "",
-                confirmPassword: "",
-                errorMessage: "",
-                successMessage: ""
+                email: '',
+                name: '',
+                firstname: '',
+                password: '',
+                confirmPassword: '',
+                errorMessage: '',
+                successMessage: ''
             };
         },
         methods: {
             async registerUser() {
                 if (this.password !== this.confirmPassword) {
-                    this.errorMessage = "Les mots de passe ne correspondent pas!";
+                    this.errorMessage = 'Les mots de passe ne correspondent pas.';
                     return;
                 }
-
                 try {
-                    let response = await register({
+                    const response = await register({
                         email: this.email,
-                        password: this.password,
+                        name: this.name,
                         firstname: this.firstname,
-                        name: this.name
+                        password: this.password
                     });
-        
-                    if (response.message) {
-                        this.successMessage = "Inscription réussie! Vous pouvez vous connecter maintenant.";
-                        this.$router.push("/login");
+                    if (response.status === 200) {
+                        this.successMessage = response.data.message;
+                        this.errorMessage = '';
+                        // You can add redirection to login page or any other action
+                        this.$router.push('/login');
+                    } else {
+                        this.errorMessage = 'Une erreur est survenue lors de l\'inscription.';
                     }
                 } catch (error) {
-                    this.errorMessage = "Erreur lors de l'inscription.";
+                    if (error.response && error.response.data) {
+                        this.errorMessage = error.response.data.message || 'Une erreur est survenue lors de l\'inscription.';
+                    } else {
+                        this.errorMessage = 'Une erreur est survenue lors de l\'inscription.';
+                    }
                 }
+            }
+        },
+
+        computed: {
+            emailHasValue() {
+                return !!this.email;
             },
+            nameHasValue() {
+                return !!this.name;
+            },
+            firstnameHasValue() {
+                return !!this.firstname;
+            },
+            passwordHasValue() {
+                return !!this.password;
+            },
+            confirmPasswordHasValue() {
+                return !!this.confirmPassword;
+            }
         }
     };
 </script>
+
+
+<style>
+/* Lorsque l'input a une valeur */
+label.has-value {
+    top: -6px; /* Assurez-vous que cette valeur est la même que celle que vous utilisez pour déplacer le label vers le haut lorsque l'input est focusé. */
+}
+</style>

@@ -2,27 +2,27 @@ import axios from 'axios';
 import Swal from 'sweetalert2'; // si Swal est utilisé ici, il doit être importé
 
 const instance = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: 'http://localhost:5000/auth/',
     timeout: 10000,
 });
 
 export const register = (userData) => {
     return instance.post("/signup", userData)
         .then(response => {
+            console.log(userData);
             return response.data;
+
         })
         .catch(error => {
             throw error;
         });
 };
 
-export const login = (userData) => {
+// Dans l'api.js
+export const loginUser = (userData) => {
     return instance.post("/login", userData)
         .then(response => {
             return response.data;
-        })
-        .catch(error => {
-            throw error;
         });
 };
 

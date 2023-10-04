@@ -15,7 +15,7 @@
 
       <!-- Right column container -->
       <div class="mb-12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12">
-        <form @submit.prevent="loginUser" class="border border-gray-300 p-4 rounded" >
+        <form @submit.prevent="handleLogin" class="border border-gray-300 p-4 rounded" >
           <!--Sign in section-->
           <div class="flex flex-row items-center justify-center lg:justify-start">
             <p class="mb-0 mr-4 text-lg">Connexion avec </p>
@@ -90,7 +90,7 @@
 
           </div>
         </form>
-      </div>
+      </div> @submit.prevent="loginUser"
     </div>
   </div>
 </section>
@@ -106,8 +106,9 @@
   </div>
 </template>
 
+<!-- Dans votre composant Vue -->
 <script>
-import { login } from '@/services/api.js';
+import { loginUser } from '@/services/api.js'; // J'ai changé le nom pour éviter les confusions
 
 export default {
   data() {
@@ -118,15 +119,16 @@ export default {
     };
   },
   methods: {
-    async loginUser() {
+    async handleLogin() { // Renommé pour plus de clarté
       try {
-        const response = await login({
+        
+        const response = await loginUser({
           email: this.email,
           password: this.password
         });
 
-        if (response.data && response.data.token) {
-          localStorage.setItem('token', response.data.token);
+        if (response.token) {
+          localStorage.setItem('token', response.token);
           this.$router.push('/dashboard');
         }
       } catch (error) {
@@ -137,6 +139,7 @@ export default {
   }
 };
 </script>
+
 
 <!-- Style (vous pouvez le personnaliser davantage) -->
 <style scoped>

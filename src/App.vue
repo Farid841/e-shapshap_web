@@ -1,12 +1,15 @@
 <template>
-  <div id="app">
+
+  <div style="display: flex; flex-direction: column; min-height: 100vh;">
     <Header />
+    <div id="app" style="flex: 1 0 auto;">
       <router-view>
         
-        
       </router-view>
+    </div>
     <Footer />
   </div>
+
 </template>
 
 <script>
